@@ -1,0 +1,9 @@
+X: 1
+T: Zap Fanfare
+C: Martin C. Doege
+M: C
+L: 1/8
+K: C
+Q: 1/4=180
+|c3ccz | d2c2d2 | f6|
+
