@@ -15,9 +15,11 @@ SSIZ = 10        # station size
 ENSIZ = 4        # enemy size
 PSIZ = 2         # photon torpedo size
 SATSIZ = 3       # attack satellite size
+EXSIZ = 5        # explosion size
 PI2 = pi / 2
 BASES = 3        # initial numbers of bases
 NEWBASE = 75000  # score for a bonus base
+EXPLO_DUR = 10   # explosion duration
 
 class Zap:
 	def __init__(self):
@@ -32,6 +34,7 @@ class Zap:
 		self.dir = 0
 		self.hiscore = 0
 		self.phot = [1000, 1000, 1000, 1000]
+		self.explo = []
 		self.newgame()
 		pygame.mixer.init()
 		self.audio = {
@@ -49,6 +52,7 @@ class Zap:
 			"photon":   pygame.image.load("img/photon.png"),
 			"fighter2": pygame.image.load("img/fighter.png"),
 			"sat":      pygame.image.load("img/satellite.png"),
+			"explode":  pygame.image.load("img/explosion.png"),
 			"num":      pygame.image.load("img/numbers.png"),
 			"text":     pygame.image.load("img/text.png"),
 		}
@@ -120,6 +124,11 @@ class Zap:
 		self.bonus = self.score // NEWBASE
 		print(self.bases + self.bonus, "BASES")
 
+	def add_explosion(self, xdir, xdist):
+		"Add exlosion effect"
+		x, y = (int(xdist * sin(PI2 * xdir)), int(xdist * cos(PI2 * xdir)))
+		self.explo.append([x, y, EXPLO_DUR])
+
 	def fire(self):
 		"Trigger has been pulled, check if anything has been hit"
 		self.audio["fire"].play()
@@ -128,6 +137,7 @@ class Zap:
 			if abs(self.dir - (self.satdir % 4)) < .25:
 				self.incscore(2000)
 				self.audio["satdest"].play()
+				self.add_explosion(self.satdir, self.satdist)
 				self.satstage = False
 				self.satdir, self.satdist = 0, 1000
 				return
@@ -137,6 +147,7 @@ class Zap:
 		if self.dir == self.shipdir and self.shipdist < 1000 and self.shipdist < self.phot[self.dir]:
 			self.incscore(500)
 			self.audio["shiphit"].play()
+			self.add_explosion(self.shipdir, self.shipdist)
 			if random.random() < .1:
 				self.satstage = True
 				self.satdist = 100
@@ -162,6 +173,16 @@ class Zap:
 		x, y = (int(self.shipdist * sin(PI2 * self.shipdir)),
 			int(self.shipdist * cos(PI2 * self.shipdir)))
 		self.dazz.blit(self.img["fighter%u" % self.shipdir], (CENTER[0] - s + x, CENTER[1] - s - y))
+
+	def explo_draw(self, s):
+		"Draw explosions"
+		for n, x in enumerate(self.explo):
+			if x[2] > 0:
+				x[2] -= 1
+				self.dazz.blit(self.img["explode"], (CENTER[0] - s + x[0], CENTER[1] - s - x[1]))
+		for n, x in enumerate(self.explo):
+			if x[2] <= 0:
+				del(self.explo[n])
 
 	def photons(self, s):
 		"Draw photon torpedoes"
@@ -268,6 +289,7 @@ class Zap:
 		self.dazz.blit(self.starfield, (0, 0))
 		self.laser()
 		self.station(SSIZ)
+		self.explo_draw(EXSIZ)
 		if self.satstage:
 			self.sat(SATSIZ)
 		else:
