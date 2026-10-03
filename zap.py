@@ -81,7 +81,14 @@ class Zap:
         self.starfield.fill((0, 0, 0))
         for n in range(200):
             x, y = random.randint(0, RES - 1), random.randint(0, RESY - 1)
-            pygame.draw.line(self.starfield, (120, 120, 120), (x, y), (x, y))
+            c = random.randint(20, 120)
+            if random.random() < 0.8:
+                self.starfield.set_at((x, y), (c, c, c))
+            else:
+                if random.random() < 0.5:
+                    self.starfield.set_at((x, y), (c + random.randint(0, 80), c, c))
+                else:
+                    self.starfield.set_at((x, y), (c, c, c + random.randint(0, 80)))
 
     def events(self):
         "Handle player input"
@@ -280,8 +287,8 @@ class Zap:
                 xc = round(r * sin(p))
                 yc = round(r * cos(p))
                 for i in range(4):
-                    x = CENTER[0] + random.randrange(-10, 10) + xc
-                    y = CENTER[1] + random.randrange(-10, 10) + yc
+                    x = CENTER[0] + random.randint(-10, 10) + xc
+                    y = CENTER[1] + random.randint(-10, 10) + yc
                     self.dazz.set_at((x, y), c)
 
                 out = pygame.transform.scale(self.dazz, (self.res))
