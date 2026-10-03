@@ -129,7 +129,7 @@ class Zap:
 
     def add_explosion(self, xdir, xdist):
         "Add exlosion effect"
-        x, y = (int(xdist * sin(PI2 * xdir)), int(xdist * cos(PI2 * xdir)))
+        x, y = (round(xdist * sin(PI2 * xdir)), round(xdist * cos(PI2 * xdir)))
         self.explo.append([x, y, EXPLO_DUR])
 
     def fire(self):
@@ -178,8 +178,8 @@ class Zap:
     def enemy(self, s):
         "Draw enemy fighters"
         x, y = (
-            int(self.shipdist * sin(PI2 * self.shipdir)),
-            int(self.shipdist * cos(PI2 * self.shipdir)),
+            round(self.shipdist * sin(PI2 * self.shipdir)),
+            round(self.shipdist * cos(PI2 * self.shipdir)),
         )
         self.dazz.blit(
             self.img["fighter%u" % self.shipdir], (CENTER[0] - s + x, CENTER[1] - s - y)
@@ -200,14 +200,17 @@ class Zap:
     def photons(self, s):
         "Draw photon torpedoes"
         for n in range(4):
-            x, y = (int(self.phot[n] * sin(PI2 * n)), int(self.phot[n] * cos(PI2 * n)))
+            x, y = (
+                round(self.phot[n] * sin(PI2 * n)),
+                round(self.phot[n] * cos(PI2 * n)),
+            )
             self.dazz.blit(self.img["photon"], (CENTER[0] - s + x, CENTER[1] - s - y))
 
     def sat(self, s):
         "Draw attack satellite"
         x, y = (
-            int(self.satdist * sin(PI2 * self.satdir)),
-            int(self.satdist * cos(PI2 * self.satdir)),
+            round(self.satdist * sin(PI2 * self.satdir)),
+            round(self.satdist * cos(PI2 * self.satdir)),
         )
         self.dazz.blit(self.img["sat"], (CENTER[0] - s + x, CENTER[1] - s - y))
 
@@ -218,8 +221,8 @@ class Zap:
             (255, 255, 0),
             (CENTER[0], CENTER[1]),
             (
-                int(CENTER[0] + 1.5 * SSIZ * sin(PI2 * self.dir)),
-                int(CENTER[1] - 1.5 * SSIZ * cos(PI2 * self.dir)),
+                round(CENTER[0] + 1.5 * SSIZ * sin(PI2 * self.dir)),
+                round(CENTER[1] - 1.5 * SSIZ * cos(PI2 * self.dir)),
             ),
         )
 
@@ -232,8 +235,8 @@ class Zap:
                 (255, 255, 255),
                 (CENTER[0], CENTER[1]),
                 (
-                    int(CENTER[0] + dist * sin(PI2 * self.dir)),
-                    int(CENTER[1] - dist * cos(PI2 * self.dir)),
+                    round(CENTER[0] + dist * sin(PI2 * self.dir)),
+                    round(CENTER[1] - dist * cos(PI2 * self.dir)),
                 ),
             )
 
