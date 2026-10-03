@@ -1,6 +1,6 @@
 ## Zap, a Python version of the 1980 arcade game [*Space Zap*](https://en.wikipedia.org/wiki/Space_Zap)
 
-Defend your space station (yellow) against enemy fighters (green), missiles (red), and the attack satellite (blue). Select your gun with the cursor keys and press Space to fire.
+Defend your space station (yellow) against enemy fighters (green), missiles (red), and attack satellites (blue). Select your gun with the cursor keys and press Space to fire.
 
 The player is awarded a bonus base every 75,000 points.
 
