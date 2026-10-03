@@ -255,7 +255,7 @@ class Zap:
         self.dazz.blit(self.img["text"], (0, RESY - 5), area=(0, 6, 28, 5))
 
     def station_explodes(self, dur):
-        "Draw space station explostion animation for dur seconds"
+        "Draw space station explosion animation for dur seconds"
         for x in range(-15, 15):
             for y in range(-15, 15):
                 self.dazz.set_at((CENTER[0] + x, CENTER[1] + y), (0, 0, 0))
