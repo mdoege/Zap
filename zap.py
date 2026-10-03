@@ -6,27 +6,28 @@ import pygame
 from math import sin, cos, pi
 import random, time
 
-RES = 160        # horizontal resolution
+RES = 160  # horizontal resolution
 RESY = int(0.75 * RES)
-RES2 = RES/2
+RES2 = RES / 2
 CENTER = int(RES2), int(0.75 * RES2)
-SRES = 800       # initial upscaled horizontal resolution (window can be resized)
-SSIZ = 10        # station size
-ENSIZ = 4        # enemy size
-PSIZ = 2         # photon torpedo size
-SATSIZ = 3       # attack satellite size
-EXSIZ = 5        # explosion size
+SRES = 800  # initial upscaled horizontal resolution (window can be resized)
+SSIZ = 10  # station size
+ENSIZ = 4  # enemy size
+PSIZ = 2  # photon torpedo size
+SATSIZ = 3  # attack satellite size
+EXSIZ = 5  # explosion size
 PI2 = pi / 2
-BASES = 3        # initial numbers of bases
+BASES = 3  # initial numbers of bases
 NEWBASE = 75000  # score for a bonus base
-EXPLO_DUR = 10   # explosion duration
+EXPLO_DUR = 10  # explosion duration
+
 
 class Zap:
     def __init__(self):
         pygame.init()
         self.res = SRES, int(0.75 * SRES)
         self.screen = pygame.display.set_mode(self.res, pygame.RESIZABLE)
-        pygame.display.set_caption('Zap')
+        pygame.display.set_caption("Zap")
         self.clock = pygame.time.Clock()
         self.dazz = pygame.Surface((RES, RESY))
         self.paused = False
@@ -39,22 +40,22 @@ class Zap:
         pygame.mixer.init()
         self.audio = {
             "fanfare": pygame.mixer.Sound("snd/fanfare.ogg"),
-            "start":   pygame.mixer.Sound("snd/start.ogg"),
-            "fire":    pygame.mixer.Sound("snd/shot.ogg"),
+            "start": pygame.mixer.Sound("snd/start.ogg"),
+            "fire": pygame.mixer.Sound("snd/shot.ogg"),
             "shiphit": pygame.mixer.Sound("snd/enemy.ogg"),
-            "end":     pygame.mixer.Sound("snd/stationdest.ogg"),
-            "pfire":   pygame.mixer.Sound("snd/photon.ogg"),
-            "pdest":   pygame.mixer.Sound("snd/photondest.ogg"),
+            "end": pygame.mixer.Sound("snd/stationdest.ogg"),
+            "pfire": pygame.mixer.Sound("snd/photon.ogg"),
+            "pdest": pygame.mixer.Sound("snd/photondest.ogg"),
             "satdest": pygame.mixer.Sound("snd/sat.ogg"),
         }
         self.img = {
-            "station":  pygame.image.load("img/station.png"),
-            "photon":   pygame.image.load("img/photon.png"),
+            "station": pygame.image.load("img/station.png"),
+            "photon": pygame.image.load("img/photon.png"),
             "fighter2": pygame.image.load("img/fighter.png"),
-            "sat":      pygame.image.load("img/satellite.png"),
-            "explode":  pygame.image.load("img/explosion.png"),
-            "num":      pygame.image.load("img/numbers.png"),
-            "text":     pygame.image.load("img/text.png"),
+            "sat": pygame.image.load("img/satellite.png"),
+            "explode": pygame.image.load("img/explosion.png"),
+            "num": pygame.image.load("img/numbers.png"),
+            "text": pygame.image.load("img/text.png"),
         }
         self.img["fighter1"] = pygame.transform.rotate(self.img["fighter2"], 90)
         self.img["fighter0"] = pygame.transform.rotate(self.img["fighter2"], 180)
@@ -78,13 +79,14 @@ class Zap:
         self.starfield = pygame.Surface((RES, RESY))
         self.starfield.fill((0, 0, 0))
         for n in range(200):
-            x, y = random.randint(0, RES-1), random.randint(0, RESY-1)
+            x, y = random.randint(0, RES - 1), random.randint(0, RESY - 1)
             pygame.draw.line(self.starfield, (120, 120, 120), (x, y), (x, y))
 
     def events(self):
         "Handle player input"
         for event in pygame.event.get():
-            if event.type == pygame.QUIT: self.running = False
+            if event.type == pygame.QUIT:
+                self.running = False
             if event.type == pygame.VIDEORESIZE:
                 self.res = event.w, event.h
                 self.screen = pygame.display.set_mode(self.res, pygame.RESIZABLE)
@@ -134,7 +136,7 @@ class Zap:
         self.audio["fire"].play()
         self.lasertime = time.time()
         if self.satstage:
-            if abs(self.dir - (self.satdir % 4)) < .25:
+            if abs(self.dir - (self.satdir % 4)) < 0.25:
                 self.incscore(2000)
                 self.audio["satdest"].play()
                 self.add_explosion(self.satdir, self.satdist)
@@ -144,11 +146,15 @@ class Zap:
             else:
                 return
 
-        if self.dir == self.shipdir and self.shipdist < 1000 and self.shipdist < self.phot[self.dir]:
+        if (
+            self.dir == self.shipdir
+            and self.shipdist < 1000
+            and self.shipdist < self.phot[self.dir]
+        ):
             self.incscore(500)
             self.audio["shiphit"].play()
             self.add_explosion(self.shipdir, self.shipdist)
-            if random.random() < .1:
+            if random.random() < 0.1:
                 self.satstage = True
                 self.satdist = 100
                 self.satdir = random.uniform(0, 4)
@@ -170,77 +176,89 @@ class Zap:
 
     def enemy(self, s):
         "Draw enemy fighters"
-        x, y = (int(self.shipdist * sin(PI2 * self.shipdir)),
-            int(self.shipdist * cos(PI2 * self.shipdir)))
-        self.dazz.blit(self.img["fighter%u" % self.shipdir], (CENTER[0] - s + x, CENTER[1] - s - y))
+        x, y = (
+            int(self.shipdist * sin(PI2 * self.shipdir)),
+            int(self.shipdist * cos(PI2 * self.shipdir)),
+        )
+        self.dazz.blit(
+            self.img["fighter%u" % self.shipdir], (CENTER[0] - s + x, CENTER[1] - s - y)
+        )
 
     def explo_draw(self, s):
         "Draw explosions"
         for n, x in enumerate(self.explo):
             if x[2] > 0:
                 x[2] -= 1
-                self.dazz.blit(self.img["explode"], (CENTER[0] - s + x[0], CENTER[1] - s - x[1]))
+                self.dazz.blit(
+                    self.img["explode"], (CENTER[0] - s + x[0], CENTER[1] - s - x[1])
+                )
         for n, x in enumerate(self.explo):
             if x[2] <= 0:
-                del(self.explo[n])
+                del self.explo[n]
 
     def photons(self, s):
         "Draw photon torpedoes"
         for n in range(4):
-            x, y = (int(self.phot[n] * sin(PI2 * n)),
-                int(self.phot[n] * cos(PI2 * n)))
+            x, y = (int(self.phot[n] * sin(PI2 * n)), int(self.phot[n] * cos(PI2 * n)))
             self.dazz.blit(self.img["photon"], (CENTER[0] - s + x, CENTER[1] - s - y))
 
     def sat(self, s):
         "Draw attack satellite"
-        x, y = (int(self.satdist * sin(PI2 * self.satdir)),
-            int(self.satdist * cos(PI2 * self.satdir)))
+        x, y = (
+            int(self.satdist * sin(PI2 * self.satdir)),
+            int(self.satdist * cos(PI2 * self.satdir)),
+        )
         self.dazz.blit(self.img["sat"], (CENTER[0] - s + x, CENTER[1] - s - y))
 
     def gun(self):
         "Draw the station's gun"
-        pygame.draw.line(self.dazz, (255, 255, 0), (CENTER[0], CENTER[1]),
-            (int(CENTER[0] + 1.5 * SSIZ * sin(PI2 * self.dir)),
-            int(CENTER[1] - 1.5 * SSIZ * cos(PI2 * self.dir))))
+        pygame.draw.line(
+            self.dazz,
+            (255, 255, 0),
+            (CENTER[0], CENTER[1]),
+            (
+                int(CENTER[0] + 1.5 * SSIZ * sin(PI2 * self.dir)),
+                int(CENTER[1] - 1.5 * SSIZ * cos(PI2 * self.dir)),
+            ),
+        )
 
     def laser(self):
         "Draw a laser shot from the station"
         dist = min(100, self.shipdist, self.phot[self.dir])
-        if time.time() - self.lasertime < .1:
-            pygame.draw.line(self.dazz, (255, 255, 255), (CENTER[0], CENTER[1]),
-                (int(CENTER[0] + dist * sin(PI2 * self.dir)),
-                int(CENTER[1] - dist * cos(PI2 * self.dir))))
+        if time.time() - self.lasertime < 0.1:
+            pygame.draw.line(
+                self.dazz,
+                (255, 255, 255),
+                (CENTER[0], CENTER[1]),
+                (
+                    int(CENTER[0] + dist * sin(PI2 * self.dir)),
+                    int(CENTER[1] - dist * cos(PI2 * self.dir)),
+                ),
+            )
 
     def scores(self):
         "Draw score and highscore display"
         for n, c in enumerate("%u" % self.score):
             i = int(c)
-            self.dazz.blit(self.img["num"], (5 * n, 6),
-                area = (5 * i, 0, 5, 5))
+            self.dazz.blit(self.img["num"], (5 * n, 6), area=(5 * i, 0, 5, 5))
         dx = RES - 5 * len("%u" % self.hiscore) + 1
         for n, c in enumerate("%u" % self.hiscore):
             i = int(c)
-            self.dazz.blit(self.img["num"], (5 * n + dx, 6),
-                area = (5 * i, 0, 5, 5))
+            self.dazz.blit(self.img["num"], (5 * n + dx, 6), area=(5 * i, 0, 5, 5))
         for n, c in enumerate("%u" % (self.bases + self.bonus)):
             i = int(c)
-            self.dazz.blit(self.img["num"], (5 * n, RESY - 11),
-                area = (5 * i, 0, 5, 5))
+            self.dazz.blit(self.img["num"], (5 * n, RESY - 11), area=(5 * i, 0, 5, 5))
 
-        self.dazz.blit(self.img["text"], (RES - 28, 0),
-                area = (0, 0, 28, 5))
-        self.dazz.blit(self.img["text"], (0, 0),
-                area = (7, 0, 28, 5))
-        self.dazz.blit(self.img["text"], (0, RESY - 5),
-                area = (0, 6, 28, 5))
-
+        self.dazz.blit(self.img["text"], (RES - 28, 0), area=(0, 0, 28, 5))
+        self.dazz.blit(self.img["text"], (0, 0), area=(7, 0, 28, 5))
+        self.dazz.blit(self.img["text"], (0, RESY - 5), area=(0, 6, 28, 5))
 
     def endgame(self):
         "The station has been destroyed"
         self.bases -= 1
         print(self.bases + self.bonus, "BASES")
         if self.bases + self.bonus > 0:
-            self.audio["shiphit"].play(loops = 5)
+            self.audio["shiphit"].play(loops=5)
             time.sleep(4)
             self.shipdist = 100
             self.shipdir = random.randint(0, 3)
@@ -249,7 +267,7 @@ class Zap:
             self.satstage = False
             self.lasertime = 0
         else:
-            self.audio["shiphit"].play(loops = 8)
+            self.audio["shiphit"].play(loops=8)
             time.sleep(6)
             self.newgame()
             self.attract = True
@@ -260,28 +278,28 @@ class Zap:
             return
         self.step = False
 
-        if self.attract:    # title screen
+        if self.attract:  # title screen
             out = pygame.transform.scale(self.attractimg, (self.res))
             self.screen.blit(out, (0, 0))
             pygame.display.flip()
             return
 
-        if self.satstage:   # killer satellite active?
-            self.satdir += .02
-            self.satdist -= .2
+        if self.satstage:  # killer satellite active?
+            self.satdir += 0.02
+            self.satdist -= 0.2
             if self.satdist < SSIZ:
                 self.endgame()
-        else:               # normal play
-            self.shipdist -= .5
+        else:  # normal play
+            self.shipdist -= 0.5
             for n in range(4):
                 if self.phot[n] < 1000:
                     self.phot[n] -= 1
                 if self.phot[n] == 1000 and self.shipdir == n:
-                    if  time.time() - self.lastshot > 1:
+                    if time.time() - self.lastshot > 1:
                         self.phot[n] = self.shipdist - 1
                         self.lastshot = time.time()
                         self.audio["pfire"].play()
-                        if random.random() < .3:
+                        if random.random() < 0.3:
                             self.shipdist = 100
                             self.shipdir = random.randint(0, 3)
             if (self.shipdist < SSIZ + ENSIZ) or (min(self.phot) < SSIZ + PSIZ):
@@ -299,9 +317,9 @@ class Zap:
         self.scores()
         out = pygame.transform.scale(self.dazz, (self.res))
         self.screen.blit(out, (0, 0))
-        
+
         pygame.display.flip()
+
 
 c = Zap()
 c.run()
-
