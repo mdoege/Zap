@@ -6,7 +6,7 @@ The player is awarded a bonus base every 75,000 points.
 
 The window is resizable, press "p" to pause, "." to advance one frame.
 
-![screenshot](zap.png "Zap screenshot")
+![screenshot](screenshot.png "Zap screenshot")
 
 ## Credits
 
