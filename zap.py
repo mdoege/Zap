@@ -6,6 +6,7 @@ import pygame
 from math import sin, cos, pi
 import random, time
 
+FPS = 60  # frame rate
 RES = 160  # horizontal resolution
 RESY = int(0.75 * RES)
 RES2 = RES / 2
@@ -113,7 +114,7 @@ class Zap:
     def run(self):
         self.running = True
         while self.running:
-            self.clock.tick(60)
+            self.clock.tick(FPS)
             self.events()
             self.update()
         pygame.quit()
@@ -253,13 +254,45 @@ class Zap:
         self.dazz.blit(self.img["text"], (0, 0), area=(7, 0, 28, 5))
         self.dazz.blit(self.img["text"], (0, RESY - 5), area=(0, 6, 28, 5))
 
+    def station_explodes(self, dur):
+        "Draw space station explostion animation for dur seconds"
+        for x in range(-15, 15):
+            for y in range(-15, 15):
+                self.dazz.set_at((CENTER[0] + x, CENTER[1] + y), (0, 0, 0))
+
+        tt = time.time()
+        col = [
+            (0, 0, 0),
+            (255, 0, 0),
+            (0, 255, 0),
+            (200, 200, 0),
+        ]
+        while time.time() - tt < dur:
+            c = random.choice(col)
+            r = 0
+            p = 2 * pi * random.random()
+            dr = random.choice([4, 5, 6, 8])
+            while r < 30:
+                r += dr
+                xc = round(r * sin(p))
+                yc = round(r * cos(p))
+                for i in range(4):
+                    x = CENTER[0] + random.randrange(-10, 10) + xc
+                    y = CENTER[1] + random.randrange(-10, 10) + yc
+                    self.dazz.set_at((x, y), c)
+
+                out = pygame.transform.scale(self.dazz, (self.res))
+                self.screen.blit(out, (0, 0))
+                pygame.display.flip()
+                time.sleep(1 / FPS)
+
     def endgame(self):
         "The station has been destroyed"
         self.bases -= 1
         print(self.bases + self.bonus, "BASES")
         if self.bases + self.bonus > 0:
             self.audio["shiphit"].play(loops=5)
-            time.sleep(4)
+            self.station_explodes(4)
             self.shipdist = 100
             self.shipdir = random.randint(0, 3)
             self.phot = [1000, 1000, 1000, 1000]
@@ -268,7 +301,7 @@ class Zap:
             self.lasertime = 0
         else:
             self.audio["shiphit"].play(loops=8)
-            time.sleep(6)
+            self.station_explodes(6)
             self.newgame()
             self.attract = True
 
