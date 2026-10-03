@@ -40,14 +40,14 @@ class Zap:
         self.newgame()
         pygame.mixer.init()
         self.audio = {
-            "fanfare": pygame.mixer.Sound("snd/fanfare.ogg"),
-            "start": pygame.mixer.Sound("snd/start.ogg"),
-            "fire": pygame.mixer.Sound("snd/shot.ogg"),
-            "shiphit": pygame.mixer.Sound("snd/enemy.ogg"),
-            "end": pygame.mixer.Sound("snd/stationdest.ogg"),
-            "pfire": pygame.mixer.Sound("snd/photon.ogg"),
-            "pdest": pygame.mixer.Sound("snd/photondest.ogg"),
-            "satdest": pygame.mixer.Sound("snd/sat.ogg"),
+            "fanfare": pygame.mixer.Sound("snd/fanfare.wav"),
+            "start": pygame.mixer.Sound("snd/start.wav"),
+            "fire": pygame.mixer.Sound("snd/shot.wav"),
+            "shiphit": pygame.mixer.Sound("snd/enemy.wav"),
+            "end": pygame.mixer.Sound("snd/stationdest.wav"),
+            "pfire": pygame.mixer.Sound("snd/photon.wav"),
+            "pdest": pygame.mixer.Sound("snd/photondest.wav"),
+            "satdest": pygame.mixer.Sound("snd/sat.wav"),
         }
         self.img = {
             "station": pygame.image.load("img/station.png"),
@@ -291,7 +291,7 @@ class Zap:
         self.bases -= 1
         print(self.bases + self.bonus, "BASES")
         if self.bases + self.bonus > 0:
-            self.audio["shiphit"].play(loops=5)
+            self.audio["end"].play(loops=5)
             self.station_explodes(4)
             self.shipdist = 100
             self.shipdir = random.randint(0, 3)
@@ -300,7 +300,7 @@ class Zap:
             self.satstage = False
             self.lasertime = 0
         else:
-            self.audio["shiphit"].play(loops=8)
+            self.audio["end"].play(loops=8)
             self.station_explodes(6)
             self.newgame()
             self.attract = True
