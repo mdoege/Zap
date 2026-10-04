@@ -50,18 +50,21 @@ class Zap:
             "satdest": pygame.mixer.Sound("snd/sat.wav"),
         }
         self.img = {
-            "station": pygame.image.load("img/station.png"),
-            "photon": pygame.image.load("img/photon.png"),
-            "fighter2": pygame.image.load("img/fighter.png"),
-            "sat": pygame.image.load("img/satellite.png"),
-            "explode": pygame.image.load("img/explosion.png"),
-            "num": pygame.image.load("img/numbers.png"),
-            "text": pygame.image.load("img/text.png"),
+            "station": pygame.image.load("img/station.png").convert_alpha(),
+            "photon": pygame.image.load("img/photon.png").convert_alpha(),
+            "fighter2": pygame.image.load("img/fighter.png").convert_alpha(),
+            "sat": pygame.image.load("img/satellite.png").convert_alpha(),
+            "explode": pygame.image.load("img/explosion.png").convert_alpha(),
+            "num": pygame.image.load("img/numbers.png").convert_alpha(),
+            "text": pygame.image.load("img/text.png").convert_alpha(),
         }
         self.img["fighter1"] = pygame.transform.rotate(self.img["fighter2"], 90)
         self.img["fighter0"] = pygame.transform.rotate(self.img["fighter2"], 180)
         self.img["fighter3"] = pygame.transform.rotate(self.img["fighter2"], 270)
-        self.attractimg = pygame.image.load("img/title.png")
+        self.attractimg = pygame.image.load("img/title_alpha.png").convert_alpha()
+        self.rainbow = pygame.Surface((RES, RESY))
+        self.rainbow_counter = 0
+        self.rainbow_draw(RESY)
         self.audio["fanfare"].play()
         self.attract = True
 
@@ -315,6 +318,15 @@ class Zap:
             self.newgame()
             self.attract = True
 
+    def rainbow_draw(self, steps):
+        "Draw steps lines of rainbow background"
+        for i in range(steps):
+            self.rainbow.scroll(dy=-1)
+            self.rainbow_counter += 0.1
+            cr = 120 * sin(self.rainbow_counter) + 120
+            c = round(cr), 120, 120
+            pygame.draw.line(self.rainbow, c, (0, RESY - 1), (RES - 1, RESY - 1))
+
     def update(self):
         "Main loop"
         if self.paused and not self.step:
@@ -322,6 +334,9 @@ class Zap:
         self.step = False
 
         if self.attract:  # title screen
+            self.rainbow_draw(1)
+            out = pygame.transform.scale(self.rainbow, (self.res))
+            self.screen.blit(out, (0, 0))
             out = pygame.transform.scale(self.attractimg, (self.res))
             self.screen.blit(out, (0, 0))
             pygame.display.flip()
