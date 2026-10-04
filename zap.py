@@ -364,6 +364,7 @@ class Zap:
                 self.endgame()
         self.dazz.blit(self.starfield, (0, 0))
         self.laser()
+        self.gun()
         self.station(SSIZ)
         self.explo_draw(EXSIZ)
         if self.satstage:
@@ -371,7 +372,6 @@ class Zap:
         else:
             self.enemy(ENSIZ)
             self.photons(PSIZ)
-        self.gun()
         self.scores()
         out = pygame.transform.scale(self.dazz, (self.res))
         self.screen.blit(out, (0, 0))
