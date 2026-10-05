@@ -163,7 +163,9 @@ class Zap:
         self.audio["fire"].play()
         self.lasertime = time.time()
         if self.satstage:
-            if abs(self.dir - (self.satdir % 4)) < 0.25:
+            dsat = abs(self.dir - (self.satdir % 4))
+            dsat = min(dsat, 4 - dsat)
+            if dsat < 0.15:
                 self.incscore(2000)
                 self.audio["satdest"].play()
                 self.add_explosion(self.satdir, self.satdist)
