@@ -23,6 +23,21 @@ NEWBASE = 75000  # score for a bonus base
 EXPLO_DUR = 10  # explosion duration
 
 
+def get_diff():
+    "Return current difficulty parameters (enemy attack waves)"
+    frames = 20 * FPS
+    ediff = 0.9 / frames
+    cdiff = 0.6 / frames
+    sdiff = 1 / frames
+    while True:
+        enemy_shot, change_prob, sat_speed = 1, 0.3, 1  # initial difficulty
+        while enemy_shot > 0.1 and change_prob < 0.9:
+            enemy_shot -= ediff
+            change_prob += cdiff
+            sat_speed += sdiff
+            yield enemy_shot, change_prob, sat_speed
+
+
 class Zap:
     def __init__(self):
         pygame.init()
@@ -70,6 +85,7 @@ class Zap:
 
     def newgame(self):
         "Set up a new game, reset everthing"
+        self.Diff = get_diff()
         self.shipdir = random.randint(0, 3)
         self.shipdist = 100
         self.score = 0
@@ -342,22 +358,27 @@ class Zap:
             pygame.display.flip()
             return
 
+        # update difficulty settings
+        enemy_shot, change_prob, sat_speed = self.Diff.__next__()
+        # print("%.2f %.2f %.2f" % (enemy_shot, change_prob, sat_speed))
+
         if self.satstage:  # killer satellite active?
-            self.satdir += 0.02
-            self.satdist -= 0.2
+            self.satdir += 0.02 * sat_speed
+            self.satdist -= 0.2 * sat_speed
             if self.satdist < SSIZ:
                 self.endgame()
         else:  # normal play
             self.shipdist -= 0.5
+
             for n in range(4):
                 if self.phot[n] < 1000:
                     self.phot[n] -= 1
                 if self.phot[n] == 1000 and self.shipdir == n:
-                    if time.time() - self.lastshot > 1:
+                    if time.time() - self.lastshot > enemy_shot:
                         self.phot[n] = self.shipdist - 1
                         self.lastshot = time.time()
                         self.audio["pfire"].play()
-                        if random.random() < 0.3:
+                        if random.random() < change_prob:
                             self.shipdist = 100
                             self.shipdir = random.randint(0, 3)
             if (self.shipdist < SSIZ + ENSIZ) or (min(self.phot) < SSIZ + PSIZ):
