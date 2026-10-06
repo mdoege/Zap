@@ -7,11 +7,12 @@ from math import sin, cos, pi
 import random, time
 
 FPS = 60  # frame rate
-RES = 160  # horizontal resolution
+RES = 160  # true horizontal resolution
+ZOOM = 8  # zoom factor
+SRES = ZOOM * RES  # initial horizontal window size
 RESY = int(0.75 * RES)
 RES2 = RES / 2
 CENTER = int(RES2), int(0.75 * RES2)
-SRES = 8 * RES  # initial horizontal window size
 SSIZ = 10  # station size
 ENSIZ = 4  # enemy size
 PSIZ = 2  # photon torpedo size
