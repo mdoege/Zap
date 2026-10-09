@@ -315,6 +315,10 @@ class Zap:
                 out = pygame.transform.scale(self.dazz, (self.res))
                 self.screen.blit(out, (0, 0))
                 pygame.display.flip()
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        self.running = False
+                        return
                 time.sleep(1 / FPS)
 
     def endgame(self):
